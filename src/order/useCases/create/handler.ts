@@ -32,14 +32,19 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     if (!sendToPaymentQueueUrl) {
       throw new Error('QUEUE_URL is not set');
     }
+    const paymentRequest = {
+      orderId: order.id,
+      paymentMethod: order.paymentMethod,
+      amount: order.total,
+    }
 
     await sqs.send(new SendMessageCommand({
       QueueUrl: sendToPaymentQueueUrl,
-      MessageBody: JSON.stringify(order),
+      MessageBody: JSON.stringify(paymentRequest),
       MessageAttributes: {
         OrderId: {
           DataType: 'String',
-          StringValue: order.id.toString(),
+          StringValue: paymentRequest.toString(),
         },
       },
     }));
