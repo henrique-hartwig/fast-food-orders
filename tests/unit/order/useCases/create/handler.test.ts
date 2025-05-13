@@ -1,6 +1,19 @@
 import { handler } from '../../../../../src/order/useCases/create/handler';
 import { PrismaClient } from '@prisma/client';
+import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs';
 
+jest.mock('@aws-sdk/client-sqs', () => {
+  const mockSend = jest.fn().mockResolvedValue({
+    MessageId: 'mock-message-id'
+  });
+  
+  return {
+    SQSClient: jest.fn().mockImplementation(() => ({
+      send: mockSend
+    })),
+    SendMessageCommand: jest.fn()
+  };
+});
 
 jest.mock('@prisma/client', () => {
   return {
@@ -10,6 +23,7 @@ jest.mock('@prisma/client', () => {
 
 describe('Create Order Lambda', () => {
   let mockOrderCreate: jest.Mock;
+  let mockSQSSend: jest.Mock;
 
   beforeEach(() => {
     mockOrderCreate = jest.fn();
@@ -20,6 +34,9 @@ describe('Create Order Lambda', () => {
       },
       $disconnect: jest.fn(),
     }));
+
+    mockSQSSend = (SQSClient as jest.Mock).mock.results[0]?.value.send || jest.fn();
+    process.env.QUEUE_URL = 'https://sqs.us-east-1.amazonaws.com/123456789012/test-queue';
 
     jest.clearAllMocks();
   });
@@ -65,6 +82,11 @@ describe('Create Order Lambda', () => {
       userId: 1,
     });
     expect(mockOrderCreate).toHaveBeenCalledTimes(1);
+    expect(SendMessageCommand).toHaveBeenCalledWith(expect.objectContaining({
+      QueueUrl: 'https://sqs.us-east-1.amazonaws.com/123456789012/test-queue',
+      MessageBody: expect.any(String)
+    }));
+    expect(mockSQSSend).toHaveBeenCalledTimes(1);
   });
 
   it('should return 400 if validation error occurs', async () => {

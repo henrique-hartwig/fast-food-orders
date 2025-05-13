@@ -42,16 +42,16 @@ jobs:
       - name: Generate Dependencies Lambda Layer zip file
         working-directory: terraform/modules/lambda_layer/dependencies
         run: |
-          zip -rq fastfood-lambda-layer.zip nodejs
-          echo "Dependencies Lambda Layer generated in fastfood-lambda-layer.zip"
-          echo "Size of the zip file: $(du -h fastfood-lambda-layer.zip | cut -f1)"
+          zip -rq fastfood-orders-lambda-layer.zip nodejs
+          echo "Dependencies Lambda Layer generated in fastfood-orders-lambda-layer.zip"
+          echo "Size of the zip file: $(du -h fastfood-orders-lambda-layer.zip | cut -f1)"
 
       - name: Generate Prisma Lambda Layer zip file
         working-directory: terraform/modules/lambda_layer/prisma
         run: |
-          zip -rq fastfood-lambda-layer-prisma.zip nodejs
-          echo "Prisma Lambda Layer generated in fastfood-lambda-layer-prisma.zip"
-          echo "Size of the zip file: $(du -h fastfood-lambda-layer-prisma.zip | cut -f1)"
+          zip -rq fastfood-orders-lambda-layer-prisma.zip nodejs
+          echo "Prisma Lambda Layer generated in fastfood-orders-lambda-layer-prisma.zip"
+          echo "Size of the zip file: $(du -h fastfood-orders-lambda-layer-prisma.zip | cut -f1)"
 
       - name: Build application
         run: npm run build
