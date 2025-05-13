@@ -36,6 +36,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       orderId: order.id,
       paymentMethod: order.paymentMethod,
       amount: order.total,
+      items: order.items,
     }
 
     await sqs.send(new SendMessageCommand({
