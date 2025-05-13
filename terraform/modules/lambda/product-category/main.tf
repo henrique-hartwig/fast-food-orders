@@ -52,15 +52,15 @@ resource "aws_lambda_function" "product_category_functions" {
   description   = each.value.description
   role          = "arn:aws:iam::992382498858:role/LabRole"
   handler       = each.value.handler
-  
+
   filename         = "${path.module}/../../../../dist/product_category/${each.key}.zip"
   source_code_hash = filebase64sha256("${path.module}/../../../../dist/product_category/${each.key}.zip")
-  
-  layers           = var.lambda_layers
 
-  runtime          = "nodejs18.x"
-  memory_size      = var.lambda_memory_size
-  timeout          = var.lambda_timeout
+  layers = var.lambda_layers
+
+  runtime     = "nodejs18.x"
+  memory_size = var.lambda_memory_size
+  timeout     = var.lambda_timeout
 
   environment {
     variables = {

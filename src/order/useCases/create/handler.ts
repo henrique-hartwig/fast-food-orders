@@ -1,4 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 import { PrismaClient } from '@prisma/client';
 import { OrderService } from '../../domain/service';
 import { DbOrderRepository } from '../../domain/database';
@@ -7,6 +8,7 @@ import logger from '../../../utils/logger';
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const prismaClient = new PrismaClient();
+  const sqs = new SQSClient({ region: 'us-east-1' });
 
   try {
     if (!event.body || Object.keys(JSON.parse(event.body)).length === 0) {
@@ -24,6 +26,23 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     const orderController = new CreateOrderController(orderService);
 
     const order = await orderController.handle(requestData);
+
+    const sendToPaymentQueueUrl = process.env.QUEUE_URL;
+
+    if (!sendToPaymentQueueUrl) {
+      throw new Error('QUEUE_URL is not set');
+    }
+
+    await sqs.send(new SendMessageCommand({
+      QueueUrl: sendToPaymentQueueUrl,
+      MessageBody: JSON.stringify(order),
+      MessageAttributes: {
+        OrderId: {
+          DataType: 'String',
+          StringValue: order.id.toString(),
+        },
+      },
+    }));
 
     return {
       statusCode: 201,

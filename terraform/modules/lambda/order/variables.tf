@@ -24,7 +24,7 @@ variable "vpc_id" {
 variable "subnet_ids" {
   description = "IDs of the subnets where the Lambda functions will be deployed"
   type        = list(string)
-} 
+}
 
 variable "tags" {
   description = "Tags to be applied to the resources"
@@ -40,4 +40,10 @@ variable "lambda_layers" {
 variable "database_url" {
   description = "Database URL"
   type        = string
+}
+
+variable "fast_food_order_payment_queue_url" {
+  description = "URL da fila SQS para envio de pedidos para processamento de pagamento"
+  type        = string
+  default     = ""
 }

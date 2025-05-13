@@ -21,6 +21,11 @@ module "database" {
   subnet_ids        = module.network.public_subnet_ids
 }
 
+module "queue" {
+  source      = "./modules/queue"
+  environment = var.environment
+}
+
 module "product_category" {
   source = "./modules/lambda/product-category"
 
@@ -54,13 +59,14 @@ module "product" {
 module "order" {
   source = "./modules/lambda/order"
 
-  environment        = var.environment
-  database_url       = var.database_url
-  vpc_id             = module.network.vpc_id
-  subnet_ids         = module.network.private_subnet_ids
-  lambda_memory_size = var.lambda_memory_size
-  lambda_timeout     = var.lambda_timeout
-  lambda_layers      = [module.lambda_layer.dependencies_layer_arn, module.lambda_layer.prisma_layer_arn]
+  environment                       = var.environment
+  database_url                      = var.database_url
+  vpc_id                            = module.network.vpc_id
+  subnet_ids                        = module.network.private_subnet_ids
+  lambda_memory_size                = var.lambda_memory_size
+  lambda_timeout                    = var.lambda_timeout
+  lambda_layers                     = [module.lambda_layer.dependencies_layer_arn, module.lambda_layer.prisma_layer_arn]
+  fast_food_order_payment_queue_url = module.queue.fast_food_order_payment_queue_url
   tags = {
     Service = "Order"
   }

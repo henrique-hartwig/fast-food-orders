@@ -34,23 +34,23 @@ resource "aws_security_group" "security_group_fast_food_orders" {
 }
 
 resource "aws_db_instance" "db_fast_food_orders" {
-  identifier             = "fast-food-orders-db-${var.environment}"
-  engine                 = "postgres"
-  engine_version         = "14"
-  instance_class         = var.db_instance_class
-  allocated_storage      = 20
-  max_allocated_storage  = 100
-  storage_type           = "gp2"
-  db_name                = var.db_name
-  username               = var.db_username
-  port                   = var.db_port
-  password               = var.db_password
-  db_subnet_group_name   = aws_db_subnet_group.subnet_group_fast_food_orders.name
-  vpc_security_group_ids = [aws_security_group.security_group_fast_food_orders.id]
-  skip_final_snapshot    = true
-  deletion_protection    = var.environment == "prod" ? true : false
+  identifier              = "fast-food-orders-db-${var.environment}"
+  engine                  = "postgres"
+  engine_version          = "14"
+  instance_class          = var.db_instance_class
+  allocated_storage       = 20
+  max_allocated_storage   = 100
+  storage_type            = "gp2"
+  db_name                 = var.db_name
+  username                = var.db_username
+  port                    = var.db_port
+  password                = var.db_password
+  db_subnet_group_name    = aws_db_subnet_group.subnet_group_fast_food_orders.name
+  vpc_security_group_ids  = [aws_security_group.security_group_fast_food_orders.id]
+  skip_final_snapshot     = true
+  deletion_protection     = var.environment == "prod" ? true : false
   backup_retention_period = var.environment == "prod" ? 14 : 7
-  publicly_accessible    = true
+  publicly_accessible     = true
   tags = {
     Name        = "Fast Food Orders Database"
     Environment = var.environment

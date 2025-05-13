@@ -64,7 +64,7 @@ resource "aws_route_table_association" "public_route_table_association_fast_food
 }
 
 resource "aws_eip" "nat" {
-  count = length(var.availability_zones)
+  count  = length(var.availability_zones)
   domain = "vpc"
 
   tags = {
@@ -108,7 +108,7 @@ resource "aws_flow_log" "vpc_flow_log_fast_food" {
   log_destination = aws_cloudwatch_log_group.vpc_flow_log_fast_food.arn
   traffic_type    = "ALL"
   vpc_id          = aws_vpc.vpc_fast_food.id
-  
+
   tags = {
     Name        = "vpc-flow-log-${var.environment}"
     Environment = var.environment
@@ -118,7 +118,7 @@ resource "aws_flow_log" "vpc_flow_log_fast_food" {
 resource "aws_cloudwatch_log_group" "vpc_flow_log_fast_food" {
   name              = "/aws/vpc/flow-log-${var.environment}"
   retention_in_days = 30
-  
+
   tags = {
     Name        = "vpc-flow-log-group-${var.environment}"
     Environment = var.environment

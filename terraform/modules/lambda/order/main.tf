@@ -59,20 +59,21 @@ resource "aws_lambda_function" "orders_functions" {
   description   = each.value.description
   role          = "arn:aws:iam::992382498858:role/LabRole"
   handler       = each.value.handler
-  
+
   filename         = "${path.module}/../../../../dist/order/${each.key}.zip"
   source_code_hash = filebase64sha256("${path.module}/../../../../dist/order/${each.key}.zip")
-  
-  layers           = var.lambda_layers
 
-  runtime          = "nodejs18.x"
-  memory_size      = var.lambda_memory_size
-  timeout          = var.lambda_timeout
+  layers = var.lambda_layers
+
+  runtime     = "nodejs18.x"
+  memory_size = var.lambda_memory_size
+  timeout     = var.lambda_timeout
 
   environment {
     variables = {
       NODE_ENV     = var.environment
-      DATABASE_URL = var.database_url
+      DATABASE_URL = var.database_url,
+      QUEUE_URL    = var.fast_food_order_payment_queue_url
     }
   }
 
